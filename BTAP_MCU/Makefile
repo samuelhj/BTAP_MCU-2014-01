@@ -47,9 +47,14 @@
 
 # List Arduino/chipKIT/Digispark/Energia/Maple/Microduino/Teensy/Wiring libraries here
 #
+# ARDUINO = EEPROM Esplora Ethernet Firmata GSM 
+#	LiquidCrystal SD Servo SoftwareSerial SPI Stepper WiFi Wire 
+#
 APP_LIBS_LIST =
 
 # List users libraries here 
+#
+
 #
 USER_LIBS_LIST =
 
@@ -75,3 +80,4 @@ MAKEFILE_PATH  = $(CURRENT_DIR)/Makefiles
 UTILITIES_PATH = $(CURRENT_DIR)/Utilities
 
 include $(MAKEFILE_PATH)/Step1.mk
+
