@@ -220,6 +220,7 @@ void EEPROM_transfer()
 /*
  * sensor(s)
  *
+ *
  */
 
 /* define the pins we use to read the temperature sensor */
