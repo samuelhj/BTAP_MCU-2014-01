@@ -83,15 +83,17 @@
  *
  */
 #define BEACON_INTERVAL 1500 // for testing
-#define BEACON_INTERVAL_OFF 750 // Light beacon is off for 750ms
+#define BEACON_INTERVAL_OFF 1750 // Light beacon is off for 750ms
 #define BEACON_INTERVAL_ON 150 // Light beacon is on for 150ms
 #define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+
 
 unsigned long beacon_timestamp_on_old = 0;
 unsigned long beacon_timestamp_off_old = 0;
 unsigned long beacon_timestamp_old = 0;
 
 int beacon_led_state = LOW; /* i assume the led is initially off */
+
 
 void beacon_init()
 {
@@ -119,25 +121,36 @@ void beacon_off()
 	beacon_timestamp_off_old = millis(); /* so the first beacon_toggle following this call does not instantanously turn the led on */
 }
 
+
+
 void beacon_toggle()
 {
 	// define variables for beacon_toggle()
-	unsigned long timestamp_on = millis();
-	unsigned long timestamp_off = millis();
+	unsigned long beacon_timestamp_on = millis();
+	unsigned long beacon_timestamp_off = millis();
 
 	// millis() counts the milliseconds since the AVR started to run
 	
     // We check how long since the light beacon was on
-    if ((timestamp_on - beacon_timestamp_on_old) >= BEACON_INTERVAL_OFF)
+    if ((beacon_timestamp_on - beacon_timestamp_on_old) >= BEACON_INTERVAL_OFF)
     {
-        beacon_timestamp_on_old = timestamp_on;
+        beacon_timestamp_on_old = beacon_timestamp_on;
         digitalWrite(BEACON_LEDPIN, HIGH);
-        
+		// debug
+        Serial.begin(9600);
+		Serial.println("beacon ON: ");
+		Serial.println(beacon_timestamp_on);
+		Serial.end();
     }
-    else if ((timestamp_off - beacon_timestamp_off_old) >= BEACON_INTERVAL_ON)
+    else if ((beacon_timestamp_off - beacon_timestamp_off_old) >= BEACON_INTERVAL_ON)
     {
-        beacon_timestamp_off_old = timestamp_off;
+        beacon_timestamp_off_old = beacon_timestamp_off;
         digitalWrite(BEACON_LEDPIN, LOW);
+		// debug
+		Serial.begin(9600);
+		Serial.println("beacon off: ");
+		Serial.println(beacon_timestamp_off);
+		Serial.end();
     }
 
   
@@ -172,7 +185,9 @@ void beacon_toggle()
 #define SERIAL_LOG_TAIL "End of log."
 #define SERIAL_LOG_SPACE "  " /* divider used between in and out values in alternative version */
 
-
+// To easily log the output from EEPROM_transfer()
+// use screen with these commands when you fire up the arduino board with the BTA MCU in it.
+// 'screen -L /dev/tty.usbmodem1431 9600' and log file will be written to screenlog.N
 
 void EEPROM_transfer()
 {
