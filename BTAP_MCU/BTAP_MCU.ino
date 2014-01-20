@@ -119,6 +119,15 @@ void beacon_off()
 	beacon_timestamp_off_old = millis(); /* so the first beacon_toggle following this call does not instantanously turn the led on */
 }
 
+
+
+
+// define constants and variables for beacon_toggle()
+unsigned long timestamp_on = millis();
+unsigned long timestamp_off = millis();
+unsigned long timestamp = millis();
+// millis() counts the milliseconds since the AVR started to run
+
 void beacon_toggle()
 {
 	/*
@@ -126,15 +135,6 @@ void beacon_toggle()
 	 *
 	 */
 	
-    // We check state of BEACON_LEDPIN
-    
-    
-// millis() counts the milliseconds since the AVR started to run
-	unsigned long timestamp_on = millis();
-	unsigned long timestamp_off = millis();
-    unsigned long timestamp = millis();
-    
-
     // We check how long since the light beacon was on
     if ((timestamp_on - beacon_timestamp_on_old) >= BEACON_INTERVAL_OFF)
     {
@@ -288,6 +288,8 @@ int sensor_read()
 	 */
 
 	// We need interval timer here for the writing of the temp_external & temp_internal
+	// also need to implement some error checking on the write of the eeprom
+	// see http://playground.arduino.cc/Code/EEPROMex
 	
 	EEPROM.write(sensor_eeprom_offset, temp_internal);
 	delay(100);
@@ -309,11 +311,13 @@ int sensor_read()
 
 #define DEBUG 1
 
+unsigned long debug_timer = 1000;
+unsigned long last_debug = 0;
+unsigned long debug_timestamp = millis();
+
 void debug_tester()
 {
-	unsigned long debug_timer = 10000;
-	unsigned long last_debug = 0;
-	unsigned long debug_timestamp = millis();
+
 	
 	// Check if we should run the debug output
 	if((debug_timestamp - last_debug) >= debug_timer)
@@ -339,25 +343,33 @@ void setup()
 
 void loop()
 {
-	
+/*
 	if(DEBUG == 1)
 	{
 		debug_tester();
 
 	}
-
-	beacon_on();
+*/
+//	beacon_on();
+//	beacon shouldn't really be turned on, the beacon_toggle() function should do that entirely.
+	
 	
 	// sensor_read returns 1 as long as the EEPROM memory is not full and 0 if EEPROM memory is full
 	// this causes AVR to hang up after finishing writing to EEPROM, we don't want that really...
 	// Ticket #2
-		
+	
+	// we want the beacon to run all the time, checking every time it runs through the loop if time is night
+	beacon_toggle();
+	
+	// Then we'd like to read the temperature sensor and check wheter it's time to write to EEPROM
+	
+	/*
 	while (sensor_read())
 	{
 		beacon_toggle();
 	}
-
-	beacon_off(); /* in case our loop ended with the beacon on. */
+*/
+//	beacon_off(); /* in case our loop ended with the beacon on. */
 	
 	
 }
