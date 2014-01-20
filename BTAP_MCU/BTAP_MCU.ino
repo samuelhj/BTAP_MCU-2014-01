@@ -6,6 +6,7 @@
 // 
 // Author	 	Samúel Úlfr Þór Hjaltalín Guðjónsson
 // 				Samúel Úlfr Þór Hjaltalín Guðjónsson
+//              Michael
 //
 // Date			2014.1.19 19:21
 // Version		<#version#>
@@ -176,6 +177,8 @@ void beacon_toggle()
 #define SERIAL_LOG_TAIL "End of log."
 #define SERIAL_LOG_SPACE "  " /* divider used between in and out values in alternative version */
 
+
+
 void EEPROM_transfer()
 {
 	unsigned int offset = 0; /* current offset to write to */
@@ -296,6 +299,24 @@ int sensor_read()
  *
  */
 
+// Debug section
+
+#define DEBUG 1
+
+unsigned long int debug_timer = 2000;
+unsigned long int last_debug = 0;
+unsigned long int debug_timestamp = millis();
+
+void debug_tester()
+{
+	Serial.begin(SERIAL_BAUD);
+	Serial.println("AVR has been running for \n");
+	Serial.println(millis());
+	Serial.println("\n milliseconds");
+}
+
+
+
 void setup()
 {
     EEPROM_transfer();
@@ -304,7 +325,17 @@ void setup()
 
 void loop()
 {
-    
+	
+	if(DEBUG == 1)
+	{
+		
+		if((debug_timestamp - last_debug) >= debug_timer)
+		{
+			last_debug = debug_timestamp;
+			debug_tester();
+		}
+	}
+
 	beacon_on();
 	
 	/* sensor_read returns 1 as long as the EEPROM memory is not full and 0 if EEPROM memory is full */
