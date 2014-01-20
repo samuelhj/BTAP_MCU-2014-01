@@ -119,21 +119,13 @@ void beacon_off()
 	beacon_timestamp_off_old = millis(); /* so the first beacon_toggle following this call does not instantanously turn the led on */
 }
 
-
-
-
-// define constants and variables for beacon_toggle()
-unsigned long timestamp_on = millis();
-unsigned long timestamp_off = millis();
-unsigned long timestamp = millis();
-// millis() counts the milliseconds since the AVR started to run
-
 void beacon_toggle()
 {
-	/*
-	 * toggle led state every BEACON_INTERVAL milliseconds. (called in main loop)
-	 *
-	 */
+	// define variables for beacon_toggle()
+	unsigned long timestamp_on = millis();
+	unsigned long timestamp_off = millis();
+
+	// millis() counts the milliseconds since the AVR started to run
 	
     // We check how long since the light beacon was on
     if ((timestamp_on - beacon_timestamp_on_old) >= BEACON_INTERVAL_OFF)
@@ -311,13 +303,13 @@ int sensor_read()
 
 #define DEBUG 1
 
-unsigned long debug_timer = 1000;
+unsigned long debug_timer = 2000;
 unsigned long last_debug = 0;
-unsigned long debug_timestamp = millis();
+
 
 void debug_tester()
 {
-
+	unsigned long debug_timestamp = millis();
 	
 	// Check if we should run the debug output
 	if((debug_timestamp - last_debug) >= debug_timer)
@@ -337,19 +329,22 @@ void debug_tester()
 
 void setup()
 {
-    EEPROM_transfer();
+    // Transfer from the memory of the EEPROM to save temperature readings.
+	EEPROM_transfer();
+	// we initalize the beacon (Isn't this too much of complication?)
     beacon_init();
 }
 
 void loop()
 {
-/*
+	
+
 	if(DEBUG == 1)
 	{
 		debug_tester();
 
 	}
-*/
+
 //	beacon_on();
 //	beacon shouldn't really be turned on, the beacon_toggle() function should do that entirely.
 	
@@ -358,8 +353,10 @@ void loop()
 	// this causes AVR to hang up after finishing writing to EEPROM, we don't want that really...
 	// Ticket #2
 	
-	// we want the beacon to run all the time, checking every time it runs through the loop if time is night
+	// we want the beacon to run all the time, checking every time it runs through the loop if time is nigh
 	beacon_toggle();
+
+
 	
 	// Then we'd like to read the temperature sensor and check wheter it's time to write to EEPROM
 	
