@@ -4,9 +4,11 @@
 // Program for the MCU of the 2014-01 balloon launch.
 // Developed with [embedXcode](http://embedXcode.weebly.com)
 // 
-// Author	 	Samúel Úlfr Þór Hjaltalín Guðjónsson
-// 				Samúel Úlfr Þór Hjaltalín Guðjónsson
+// Authors	 	Samúel Úlfr Þór Hjaltalín Guðjónsson
+// 				samuel@ulfr.net
+//
 //              Michael
+//
 //
 // Date			2014.1.19 19:21
 // Version		<#version#>
@@ -31,7 +33,7 @@
  * Since the original code is incomplete I may have made assumptions to what should happen which are wrong.
  * i also do not know AVR specifics and especially errorchecking of AVR specifics will be lacking!
  *
- * - mh / michael@bylur.net
+
  *
  */
 
@@ -83,10 +85,11 @@
 #define BEACON_INTERVAL 1500 // for testing
 #define BEACON_INTERVAL_OFF 750 // Light beacon is off for 750ms
 #define BEACON_INTERVAL_ON 150 // Light beacon is on for 150ms
-#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used
+#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 
 unsigned long beacon_timestamp_on_old = 0;
 unsigned long beacon_timestamp_off_old = 0;
+unsigned long beacon_timestamp_old = 0;
 
 int beacon_led_state = LOW; /* i assume the led is initially off */
 
@@ -144,7 +147,7 @@ void beacon_toggle()
         beacon_timestamp_off_old = timestamp_off;
         digitalWrite(BEACON_LEDPIN, LOW);
     }
-    
+
   
 /*
 	if ((timestamp - beacon_timestamp_old) >= BEACON_INTERVAL)
@@ -171,7 +174,7 @@ void beacon_toggle()
  *
  */
 
-#define EEPROM_OFFSET_MAX 1024 /* this _must_ be dividable by two */
+#define EEPROM_OFFSET_MAX 128 /* this _must_ be dividable by two */
 #define SERIAL_BAUD 9600
 #define SERIAL_LOG_HEAD "Start of log."
 #define SERIAL_LOG_TAIL "End of log."
@@ -217,6 +220,7 @@ void EEPROM_transfer()
      */
 	
 	Serial.println(SERIAL_LOG_TAIL);
+	Serial.end();
 	beacon_off();
 }
 
@@ -282,6 +286,8 @@ int sensor_read()
 	/* these writes most certainly need some checks/delays as we found out in a previous discussion,
 	 * i have added delay() but checks would be required for anything beyond a basic prototype
 	 */
+
+	// We need interval timer here for the writing of the temp_external & temp_internal
 	
 	EEPROM.write(sensor_eeprom_offset, temp_internal);
 	delay(100);
@@ -303,16 +309,24 @@ int sensor_read()
 
 #define DEBUG 1
 
-unsigned long int debug_timer = 2000;
-unsigned long int last_debug = 0;
-unsigned long int debug_timestamp = millis();
-
 void debug_tester()
 {
-	Serial.begin(SERIAL_BAUD);
-	Serial.println("AVR has been running for \n");
-	Serial.println(millis());
-	Serial.println("\n milliseconds");
+	unsigned long debug_timer = 10000;
+	unsigned long last_debug = 0;
+	unsigned long debug_timestamp = millis();
+	
+	// Check if we should run the debug output
+	if((debug_timestamp - last_debug) >= debug_timer)
+	{
+		last_debug = debug_timestamp;
+		Serial.begin(SERIAL_BAUD);
+		Serial.println("AVR has been running for ");
+		Serial.println(millis());
+		Serial.println(" milliseconds \n");
+		Serial.end();
+		debug_timestamp = millis();
+		
+	}
 }
 
 
@@ -328,22 +342,21 @@ void loop()
 	
 	if(DEBUG == 1)
 	{
-		
-		if((debug_timestamp - last_debug) >= debug_timer)
-		{
-			last_debug = debug_timestamp;
-			debug_tester();
-		}
+		debug_tester();
+
 	}
 
 	beacon_on();
 	
-	/* sensor_read returns 1 as long as the EEPROM memory is not full and 0 if EEPROM memory is full */
+	// sensor_read returns 1 as long as the EEPROM memory is not full and 0 if EEPROM memory is full
+	// this causes AVR to hang up after finishing writing to EEPROM, we don't want that really...
+	// Ticket #2
+		
 	while (sensor_read())
 	{
 		beacon_toggle();
 	}
-	
+
 	beacon_off(); /* in case our loop ended with the beacon on. */
 	
 	
