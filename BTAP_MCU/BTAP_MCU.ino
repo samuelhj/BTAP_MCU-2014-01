@@ -73,8 +73,47 @@
 
 /* i have put the #defines for each section inside the sections they "belong" to
  * for easier top-to-bottom reading, but you may want to put them all up here for
- * easier quick-overview
+ * easier quick-overview -- TBD Ticket #5
  */
+
+
+// DEFINES
+
+// defines for EEPROM
+
+#define EEPROM_OFFSET_MAX 1024 /* this _must_ be dividable by two */
+#define SERIAL_BAUD 9600
+#define SERIAL_LOG_HEAD "Start of log."
+#define SERIAL_LOG_TAIL "End of log."
+#define SERIAL_LOG_SPACE "  " /* divider used between in and out values in alternative version */
+
+// define for debug, 1 == on, 0 == off
+#define DEBUG 0
+
+// Debug section
+
+unsigned long debug_timer = 2000;
+unsigned long last_debug = 0;
+
+
+void debug_tester()
+{
+	unsigned long debug_timestamp = millis();
+	
+	// Check if we should run the debug output
+	if((debug_timestamp - last_debug) >= debug_timer)
+	{
+		last_debug = debug_timestamp;
+		Serial.begin(SERIAL_BAUD);
+		Serial.println("AVR has been running for ");
+		Serial.println(millis());
+		Serial.println(" milliseconds \n");
+		Serial.end();
+		debug_timestamp = millis();
+		
+	}
+}
+
 
 
 
@@ -83,7 +122,7 @@
  *
  */
 #define BEACON_INTERVAL 1500 // for testing
-#define BEACON_INTERVAL_OFF 1750 // Light beacon is off for 750ms
+#define BEACON_INTERVAL_OFF 750 // Light beacon is off for 750ms
 #define BEACON_INTERVAL_ON 150 // Light beacon is on for 150ms
 #define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 
@@ -136,21 +175,30 @@ void beacon_toggle()
     {
         beacon_timestamp_on_old = beacon_timestamp_on;
         digitalWrite(BEACON_LEDPIN, HIGH);
+		
 		// debug
-        Serial.begin(9600);
-		Serial.println("beacon ON: ");
-		Serial.println(beacon_timestamp_on);
-		Serial.end();
-    }
+		if(DEBUG == 1)
+		{
+			Serial.begin(SERIAL_BAUD);
+			Serial.println("beacon ON: ");
+			Serial.println(beacon_timestamp_on);
+			Serial.end();
+    
+		}
+	}
+	
     else if ((beacon_timestamp_off - beacon_timestamp_off_old) >= BEACON_INTERVAL_ON)
     {
         beacon_timestamp_off_old = beacon_timestamp_off;
         digitalWrite(BEACON_LEDPIN, LOW);
 		// debug
-		Serial.begin(9600);
-		Serial.println("beacon off: ");
-		Serial.println(beacon_timestamp_off);
-		Serial.end();
+		if(DEBUG == 1)
+		{
+			Serial.begin(SERIAL_BAUD);
+			Serial.println("beacon off: ");
+			Serial.println(beacon_timestamp_off);
+			Serial.end();
+		}
     }
 
   
@@ -179,11 +227,7 @@ void beacon_toggle()
  *
  */
 
-#define EEPROM_OFFSET_MAX 128 /* this _must_ be dividable by two */
-#define SERIAL_BAUD 9600
-#define SERIAL_LOG_HEAD "Start of log."
-#define SERIAL_LOG_TAIL "End of log."
-#define SERIAL_LOG_SPACE "  " /* divider used between in and out values in alternative version */
+
 
 // To easily log the output from EEPROM_transfer()
 // use screen with these commands when you fire up the arduino board with the BTA MCU in it.
@@ -243,6 +287,12 @@ void EEPROM_transfer()
 #define LM35_EXTERNAL_POSITIVE 2
 #define LM35_EXTERNAL_NEGATIVE 3
 
+// timer value in milliseconds
+#define EEPROM_WRITE 90000
+
+// define variables
+
+
 unsigned int sensor_eeprom_offset = 0; /* how far into the eeprom memory we are (aka. next offset to write at) */
 
 int sensor_read()
@@ -298,6 +348,8 @@ int sensor_read()
 	// also need to implement some error checking on the write of the eeprom
 	// see http://playground.arduino.cc/Code/EEPROMex
 	
+	// interval timer
+	
 	EEPROM.write(sensor_eeprom_offset, temp_internal);
 	delay(100);
     
@@ -314,31 +366,6 @@ int sensor_read()
  *
  */
 
-// Debug section
-
-#define DEBUG 1
-
-unsigned long debug_timer = 2000;
-unsigned long last_debug = 0;
-
-
-void debug_tester()
-{
-	unsigned long debug_timestamp = millis();
-	
-	// Check if we should run the debug output
-	if((debug_timestamp - last_debug) >= debug_timer)
-	{
-		last_debug = debug_timestamp;
-		Serial.begin(SERIAL_BAUD);
-		Serial.println("AVR has been running for ");
-		Serial.println(millis());
-		Serial.println(" milliseconds \n");
-		Serial.end();
-		debug_timestamp = millis();
-		
-	}
-}
 
 
 
