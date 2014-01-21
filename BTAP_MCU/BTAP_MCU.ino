@@ -88,11 +88,20 @@
 #define SERIAL_LOG_SPACE "  " /* divider used between in and out values in alternative version */
 
 // define for debug, 1 == on, 0 == off
-#define DEBUG 0
+#define DEBUG 1
+#define DEBUG_INTERVAL 2000
+
+// define for light beacon
+
+#define BEACON_INTERVAL 1500 // for testing
+#define BEACON_INTERVAL_OFF 750 // Light beacon is off for 750ms
+#define BEACON_INTERVAL_ON 150 // Light beacon is on for 150ms
+#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+
 
 // Debug section
 
-unsigned long debug_timer = 2000;
+unsigned long debug_timer = DEBUG_INTERVAL;
 unsigned long last_debug = 0;
 
 
@@ -121,10 +130,7 @@ void debug_tester()
  * beacon
  *
  */
-#define BEACON_INTERVAL 1500 // for testing
-#define BEACON_INTERVAL_OFF 750 // Light beacon is off for 750ms
-#define BEACON_INTERVAL_ON 150 // Light beacon is on for 150ms
-#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+
 
 
 unsigned long beacon_timestamp_on_old = 0;
@@ -191,6 +197,7 @@ void beacon_toggle()
     {
         beacon_timestamp_off_old = beacon_timestamp_off;
         digitalWrite(BEACON_LEDPIN, LOW);
+		
 		// debug
 		if(DEBUG == 1)
 		{
@@ -287,13 +294,17 @@ void EEPROM_transfer()
 #define LM35_EXTERNAL_POSITIVE 2
 #define LM35_EXTERNAL_NEGATIVE 3
 
-// timer value in milliseconds
-#define EEPROM_WRITE 90000
+// define interval of EEPROM write
+#define EEPROM_WRITE_INTERVAL 90000
 
 // define variables
 
 
 unsigned int sensor_eeprom_offset = 0; /* how far into the eeprom memory we are (aka. next offset to write at) */
+
+// unsigned long eeprom_write_timer = EEPROM_WRITE_INTERVAL;
+unsigned long last_eeprom_write = 0;
+
 
 int sensor_read()
 {
@@ -350,13 +361,64 @@ int sensor_read()
 	
 	// interval timer
 	
-	EEPROM.write(sensor_eeprom_offset, temp_internal);
-	delay(100);
-    
-	EEPROM.write((sensor_eeprom_offset + (EEPROM_OFFSET_MAX/2)), temp_external);
-	delay(100);
 	
-	sensor_eeprom_offset++; /* update offset to use on next call to this function */
+	
+	// Debug section
+	
+
+	
+	
+	
+
+		unsigned long eeprom_write_timestamp = millis();
+		
+	if((eeprom_write_timestamp - last_eeprom_write) >= EEPROM_WRITE_INTERVAL)
+	{
+		last_eeprom_write = eeprom_write_timestamp;
+		
+
+
+		// We need to check if the EEPROM is ready/written etc.. Ticket #3
+		
+		// write internal temperature to
+		EEPROM.write(sensor_eeprom_offset, temp_internal);
+		delay(100);
+		
+		// see if it measures and writes internal temperature
+		if(DEBUG == 1)
+		{
+			Serial.begin(SERIAL_BAUD);
+			Serial.println("We write to EEPROM \n");
+			Serial.println(temp_internal);
+			// need to read from eeprom here
+			Serial.end();
+			eeprom_write_timestamp = millis();
+		}
+		
+		
+		EEPROM.write((sensor_eeprom_offset + (EEPROM_OFFSET_MAX/2)), temp_external);
+		delay(100);
+		
+		// see if it measures and writes external temperature
+		if(DEBUG == 1)
+		{
+			Serial.begin(SERIAL_BAUD);
+			Serial.println("We write to EEPROM \n");
+			Serial.println(temp_external);
+			// need to read from eeprom here
+			Serial.end();
+			eeprom_write_timestamp = millis();
+		}
+		
+		
+		sensor_eeprom_offset++; // update offset to use on next call to this function
+			
+	}
+
+	
+	
+	
+
 	
 	return(1);
 }
@@ -393,14 +455,14 @@ void loop()
 	
 	// sensor_read returns 1 as long as the EEPROM memory is not full and 0 if EEPROM memory is full
 	// this causes AVR to hang up after finishing writing to EEPROM, we don't want that really...
-	// Ticket #2
+	// Ticket #2 - Solved
 	
 	// we want the beacon to run all the time, checking every time it runs through the loop if time is nigh
 	beacon_toggle();
-
-
 	
-	// Then we'd like to read the temperature sensor and check wheter it's time to write to EEPROM
+	// Then we'd like to read the temperature sensor and check whether it's time to write to EEPROM
+	
+	sensor_read();
 	
 	/*
 	while (sensor_read())
