@@ -19,25 +19,6 @@
 // See			ReadMe.txt for references
 //
 
-/*
- * BTAP_MCU.mh.cpp
- * Rev. 2
- *
- * THIS IS WORK IN PROGRESS AND MIGHT COMPILE (untested) BUT STILL WONT MAKE YOU RICH... YET!
- *
- * My BTAP_MCU implementation/cleanup based on the original BTAP_MCU.cpp
- *
- * insert whatever license you want here, my code is yours to use as see fit.
- * (preferably BSD-like but if you must use that horrible GPL then do so :)
- *
- * Since the original code is incomplete I may have made assumptions to what should happen which are wrong.
- * i also do not know AVR specifics and especially errorchecking of AVR specifics will be lacking!
- *
-
- *
- */
-
-
 // Core library for code-sense
 #if defined(WIRING) // Wiring specific
 #include "Wiring.h"
@@ -98,10 +79,20 @@
 #define BEACON_INTERVAL_ON 150 // Light beacon is on for 150ms
 #define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 
+// define for sensors
+
+/* define the pins we use to read the temperature sensor */
+#define LM35_INTERNAL_POSITIVE 0
+#define LM35_INTERNAL_NEGATIVE 1
+#define LM35_EXTERNAL_POSITIVE 2
+#define LM35_EXTERNAL_NEGATIVE 3
+
+// define interval of EEPROM write
+#define EEPROM_WRITE_INTERVAL 900
 
 // Debug section
 
-unsigned long debug_timer = DEBUG_INTERVAL;
+// unsigned long debug_timer = DEBUG_INTERVAL;
 unsigned long last_debug = 0;
 
 
@@ -110,7 +101,7 @@ void debug_tester()
 	unsigned long debug_timestamp = millis();
 	
 	// Check if we should run the debug output
-	if((debug_timestamp - last_debug) >= debug_timer)
+	if((debug_timestamp - last_debug) >= DEBUG_INTERVAL)
 	{
 		last_debug = debug_timestamp;
 		Serial.begin(SERIAL_BAUD);
@@ -288,14 +279,7 @@ void EEPROM_transfer()
  *
  */
 
-/* define the pins we use to read the temperature sensor */
-#define LM35_INTERNAL_POSITIVE 0
-#define LM35_INTERNAL_NEGATIVE 1
-#define LM35_EXTERNAL_POSITIVE 2
-#define LM35_EXTERNAL_NEGATIVE 3
 
-// define interval of EEPROM write
-#define EEPROM_WRITE_INTERVAL 90000
 
 // define variables
 
