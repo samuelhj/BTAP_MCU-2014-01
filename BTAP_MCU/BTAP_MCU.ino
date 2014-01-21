@@ -60,7 +60,7 @@
 
 // DEFINES
 
-// defines for EEPROM
+// define for EEPROM
 
 #define EEPROM_OFFSET_MAX 1024 /* this _must_ be dividable by two */
 #define SERIAL_BAUD 9600
@@ -88,7 +88,12 @@
 #define LM35_EXTERNAL_NEGATIVE 3
 
 // define interval of EEPROM write
-#define EEPROM_WRITE_INTERVAL 900
+#define EEPROM_WRITE_INTERVAL 90000
+
+
+
+// Functions start here
+
 
 // Debug section
 
@@ -372,8 +377,9 @@ int sensor_read()
 		if(DEBUG == 1)
 		{
 			Serial.begin(SERIAL_BAUD);
-			Serial.println("We write to EEPROM \n");
+			Serial.println("We write to EEPROM: ");
 			Serial.println(temp_internal);
+			Serial.println("\n");
 			// need to read from eeprom here
 			Serial.end();
 			eeprom_write_timestamp = millis();
@@ -387,9 +393,12 @@ int sensor_read()
 		if(DEBUG == 1)
 		{
 			Serial.begin(SERIAL_BAUD);
-			Serial.println("We write to EEPROM \n");
+			Serial.println("We write to EEPROM: ");
 			Serial.println(temp_external);
 			// need to read from eeprom here
+			Serial.println("EEPROM location: ");
+			Serial.println('sensor_eeprom_offset');
+			Serial.println("\n");
 			Serial.end();
 			eeprom_write_timestamp = millis();
 		}

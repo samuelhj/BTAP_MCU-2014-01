@@ -501,7 +501,7 @@
 		E9AEBBA0188C5D5600FA6DEA /* embedXcode_check */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = embedXcode_check; path = Utilities/embedXcode_check; sourceTree = "<group>"; };
 		E9AEBBA1188C5D5600FA6DEA /* embedXcode_chrono */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = embedXcode_chrono; path = Utilities/embedXcode_chrono; sourceTree = "<group>"; };
 		E9AEBBA2188C5D5600FA6DEA /* TemplateIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = TemplateIcon.icns; path = Utilities/TemplateIcon.icns; sourceTree = "<group>"; };
-		E9AEBBA3188C5D5600FA6DEA /* BTAP_MCU.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; path = BTAP_MCU.ino; sourceTree = "<group>"; usesTabs = 1; };
+		E9AEBBA3188C5D5600FA6DEA /* BTAP_MCU.ino */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; indentWidth = 4; path = BTAP_MCU.ino; sourceTree = "<group>"; usesTabs = 1; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
