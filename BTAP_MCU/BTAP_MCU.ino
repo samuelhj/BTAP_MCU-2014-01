@@ -88,7 +88,7 @@
 #define LM35_EXTERNAL_NEGATIVE 3
 
 // define interval of EEPROM write
-#define EEPROM_WRITE_INTERVAL 90000
+#define EEPROM_WRITE_INTERVAL 90
 
 
 
@@ -304,7 +304,18 @@ int sensor_read()
 	 */
 	if (sensor_eeprom_offset >= (EEPROM_OFFSET_MAX/2))
 	{
+		// Ticket #7
+		if(DEBUG == 1)
+		{
+			Serial.begin(SERIAL_BAUD);
+			Serial.println("EEPROM at max: ");
+			Serial.println(sensor_eeprom_offset);
+			Serial.end();
+		}
+		
 		return(0);
+		
+
 	}
 	
 	/*
