@@ -14,7 +14,7 @@
 // Version		<#version#>
 // 
 // Copyright	© Samúel Úlfr Þór Hjaltalín Guðjónsson, 2014
-// License		<#license#>
+// License		license
 //
 // See			ReadMe.txt for references
 //
@@ -62,33 +62,34 @@
 
 // define for EEPROM
 
-#define EEPROM_OFFSET_MAX 1024 /* this _must_ be dividable by two */
-#define SERIAL_BAUD 9600
+#define EEPROM_OFFSET_MAX 1024 // this _must_ be dividable by two
+// The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1024
+#define SERIAL_BAUD 9600	// Baud rate of serial output
 #define SERIAL_LOG_HEAD "Start of log."
 #define SERIAL_LOG_TAIL "End of log."
-#define SERIAL_LOG_SPACE "  " /* divider used between in and out values in alternative version */
+#define SERIAL_LOG_SPACE "  " // divider used between in and out values in alternative version
 
 // define for debug, 1 == on, 0 == off
-#define DEBUG 1
+#define DEBUG 0
 #define DEBUG_INTERVAL 2000
 
 // define for light beacon
 
 #define BEACON_INTERVAL 1500 // for testing
-#define BEACON_INTERVAL_OFF 750 // Light beacon is off for 750ms
-#define BEACON_INTERVAL_ON 150 // Light beacon is on for 150ms
+#define BEACON_INTERVAL_OFF 1000 // Light beacon is off for defined milliseconds
+#define BEACON_INTERVAL_ON 250 // Light beacon is on for defined milliseconds
 #define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 
 // define for sensors
 
-/* define the pins we use to read the temperature sensor */
+// define the pins we use to read the temperature sensor - Should explain it self
 #define LM35_INTERNAL_POSITIVE 0
 #define LM35_INTERNAL_NEGATIVE 1
 #define LM35_EXTERNAL_POSITIVE 2
 #define LM35_EXTERNAL_NEGATIVE 3
 
-// define interval of EEPROM write
-#define EEPROM_WRITE_INTERVAL 90
+// define interval of EEPROM write (normally 90,000 ms or 90s)
+#define EEPROM_WRITE_INTERVAL 90000
 
 
 
@@ -98,23 +99,23 @@
 // Debug section
 
 // unsigned long debug_timer = DEBUG_INTERVAL;
-unsigned long last_debug = 0;
+unsigned long last_avr_runtime_timestamp = 0;
 
 
-void debug_tester()
+void avr_runtime()
 {
-	unsigned long debug_timestamp = millis();
+	unsigned long avr_runtime_timestamp = millis();
 	
 	// Check if we should run the debug output
-	if((debug_timestamp - last_debug) >= DEBUG_INTERVAL)
+	if((avr_runtime_timestamp - last_avr_runtime_timestamp) >= DEBUG_INTERVAL)
 	{
-		last_debug = debug_timestamp;
+		last_avr_runtime_timestamp = avr_runtime_timestamp;
 		Serial.begin(SERIAL_BAUD);
 		Serial.println("AVR has been running for ");
 		Serial.println(millis());
 		Serial.println(" milliseconds \n");
 		Serial.end();
-		debug_timestamp = millis();
+		avr_runtime_timestamp = millis();
 		
 	}
 }
@@ -302,7 +303,8 @@ int sensor_read()
 	 * bail out if we have already written the maximum number of pairs we have room for
 	 *
 	 */
-	if (sensor_eeprom_offset >= (EEPROM_OFFSET_MAX/2))
+	
+	if (sensor_eeprom_offset >= ((EEPROM_OFFSET_MAX)/2))
 	{
 		// Ticket #7
 		if(DEBUG == 1)
@@ -314,9 +316,11 @@ int sensor_read()
 		}
 		
 		return(0);
+
 		
 
 	}
+	
 	
 	/*
 	 * read internal temp sensor
@@ -418,63 +422,45 @@ int sensor_read()
 		sensor_eeprom_offset++; // update offset to use on next call to this function
 			
 	}
-
-	
-	
-	
-
 	
 	return(1);
 }
 
-/*
- * main function/loop
- *
- */
 
-
-
+// setup routine, run once every restart.
 
 void setup()
 {
     // Transfer from the memory of the EEPROM to save temperature readings.
 	EEPROM_transfer();
+	
 	// we initalize the beacon (Isn't this too much of complication?)
     beacon_init();
 }
 
+// This thing runs into eternity // main function
+
 void loop()
 {
 	
-
+	// To check how long the AVR has been running
 	if(DEBUG == 1)
 	{
-		debug_tester();
+		avr_runtime();
 
 	}
 
-//	beacon_on();
-//	beacon shouldn't really be turned on, the beacon_toggle() function should do that entirely.
-	
-	
 	// sensor_read returns 1 as long as the EEPROM memory is not full and 0 if EEPROM memory is full
 	// this causes AVR to hang up after finishing writing to EEPROM, we don't want that really...
 	// Ticket #2 - Solved
 	
 	// we want the beacon to run all the time, checking every time it runs through the loop if time is nigh
+	
 	beacon_toggle();
 	
 	// Then we'd like to read the temperature sensor and check whether it's time to write to EEPROM
-	
+	// In the sensor_read() function we check if the EEPROM is full or not before sensors are read.
+			
 	sensor_read();
-	
-	/*
-	while (sensor_read())
-	{
-		beacon_toggle();
-	}
-*/
-//	beacon_off(); /* in case our loop ended with the beacon on. */
-	
 	
 }
