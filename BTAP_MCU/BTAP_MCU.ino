@@ -121,7 +121,6 @@ void avr_runtime()
 
 
 
-
 // light beacon
 
 // variables for timers of the light beacon
