@@ -98,9 +98,8 @@
 
 // Debug section
 
-// unsigned long debug_timer = DEBUG_INTERVAL;
+// variable for last time the timer was "restarted"
 unsigned long last_avr_runtime_timestamp = 0;
-
 
 void avr_runtime()
 {
@@ -123,47 +122,45 @@ void avr_runtime()
 
 
 
-/*
- * beacon
- *
- */
+// light beacon
 
-
-
+// variables for timers of the light beacon
 unsigned long beacon_timestamp_on_old = 0;
 unsigned long beacon_timestamp_off_old = 0;
 unsigned long beacon_timestamp_old = 0;
 
-int beacon_led_state = LOW; /* i assume the led is initially off */
+// not really needed
+// int beacon_led_state = LOW; // Set the led to low at beginning
 
-
+// define BEACON_LEDPIN as output
 void beacon_init()
 {
-	pinMode(BEACON_LEDPIN, OUTPUT); /* pinMode() and OUTPUT assumed defined elsewhere */
+	pinMode(BEACON_LEDPIN, OUTPUT); // pinMode() and OUTPUT assumed defined elsewhere
     
 }
 
 void beacon_on()
 {
-	/*
-	 * turn on led, regardless of current state
-	 *
-	 */
+	
+	// turn on led, regardless of current state
+	
+	 
 	digitalWrite(BEACON_LEDPIN, HIGH);
 	beacon_timestamp_on_old = millis(); /* so the first beacon_toggle following this call does not instantanously turn the led off */
 }
 
 void beacon_off()
 {
-	/*
-	 * turn off led, regardless of current state
-	 *
-	 */
+	
+	// turn off led, regardless of current state
+	
+	 
 	digitalWrite(BEACON_LEDPIN, LOW);
 	beacon_timestamp_off_old = millis(); /* so the first beacon_toggle following this call does not instantanously turn the led on */
 }
 
 
+// Here we shift between HIGH and LOW state of light beacon
 
 void beacon_toggle()
 {
@@ -205,32 +202,10 @@ void beacon_toggle()
 		}
     }
 
-  
-/*
-	if ((timestamp - beacon_timestamp_old) >= BEACON_INTERVAL)
-	{
-		beacon_timestamp_old = timestamp;
-		
-		// I assume ledState and HIGH/LOW are also already defined somewhere else?
-		if (beacon_led_state == HIGH)
-		{
-			beacon_led_state = LOW;
-			
-		} else {
-			
-			beacon_led_state = HIGH;
-		}
-		
-		digitalWrite(BEACON_LEDPIN, beacon_led_state);
-	}
-*/
 }
 
-/*
- * EEPROM
- *
- */
 
+// EEPROM
 
 
 // To easily log the output from EEPROM_transfer()
@@ -279,12 +254,8 @@ void EEPROM_transfer()
 	beacon_off();
 }
 
-/*
- * sensor(s)
- *
- *
- */
 
+// LM35 Temperature sensors
 
 
 // define variables
@@ -292,7 +263,6 @@ void EEPROM_transfer()
 
 unsigned int sensor_eeprom_offset = 0; /* how far into the eeprom memory we are (aka. next offset to write at) */
 
-// unsigned long eeprom_write_timer = EEPROM_WRITE_INTERVAL;
 unsigned long last_eeprom_write = 0;
 
 
@@ -362,18 +332,11 @@ int sensor_read()
 	// We need interval timer here for the writing of the temp_external & temp_internal
 	// also need to implement some error checking on the write of the eeprom
 	// see http://playground.arduino.cc/Code/EEPROMex
+	// ticket #5
 	
 	// interval timer
-	
-	
-	
-	// Debug section
-	
 
 	
-	
-	
-
 		unsigned long eeprom_write_timestamp = millis();
 		
 	if((eeprom_write_timestamp - last_eeprom_write) >= EEPROM_WRITE_INTERVAL)
