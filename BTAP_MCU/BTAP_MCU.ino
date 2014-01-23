@@ -289,6 +289,7 @@ int sensor_read()
 	if (sensor_eeprom_offset >= ((EEPROM_OFFSET_MAX)/2))
 	{
 		// Ticket #7
+	
 		if(DEBUG == 1)
 		{
 			Serial.begin(SERIAL_BAUD);
@@ -302,52 +303,7 @@ int sensor_read()
 		
 
 	}
-	
-	
-	/*
-	 * read internal temp sensor
-	 *
-	 */
-	
-	read_positive = analogRead(LM35_INTERNAL_POSITIVE);
-	read_negative = analogRead(LM35_INTERNAL_NEGATIVE);
-	
-	/* magic */
-	read_positive = ((read_positive / 1024.0) * 5000) / 10.0;
-	read_negative = ((read_negative / 1024.0) * 5000) / 10.0;
-	
-	temp_internal = read_positive - read_negative;
-	
-	/*
-	 * read external temp sensor
-	 *
-	 */
-	
-	read_positive = analogRead(LM35_EXTERNAL_POSITIVE);
-	read_negative = analogRead(LM35_EXTERNAL_NEGATIVE);
-	
-	/* magic */
-	read_positive = ((read_positive / 1024.0) * 5000) / 10.0;
-	read_negative = ((read_negative / 1024.0) * 5000) / 10.0;
-	
-	temp_external = read_positive - read_negative;
-	
-	/*
-	 * write sensor readings to EEPROM
-	 *
-	 */
-	
-	/* these writes most certainly need some checks/delays as we found out in a previous discussion,
-	 * i have added delay() but checks would be required for anything beyond a basic prototype
-	 */
 
-	// We need interval timer here for the writing of the temp_external & temp_internal
-	// fixed
-	// also need to implement some error checking on the write of the eeprom
-	// see http://playground.arduino.cc/Code/EEPROMex
-	// ticket #5
-	
-	// interval timer
 
 	
 		unsigned long eeprom_write_timestamp = millis();
@@ -356,7 +312,54 @@ int sensor_read()
 	{
 		last_eeprom_write = eeprom_write_timestamp;
 		
-
+		// We read the LM35 (temperature) here.
+		
+		
+		// Ticket #8
+		/*
+		 * read internal temp sensor
+		 *
+		 */
+		
+		read_positive = analogRead(LM35_INTERNAL_POSITIVE);
+		read_negative = analogRead(LM35_INTERNAL_NEGATIVE);
+		
+		/* magic */
+		read_positive = ((read_positive / 1024.0) * 5000) / 10.0;
+		read_negative = ((read_negative / 1024.0) * 5000) / 10.0;
+		
+		temp_internal = read_positive - read_negative;
+		
+		/*
+		 * read external temp sensor
+		 *
+		 */
+		
+		read_positive = analogRead(LM35_EXTERNAL_POSITIVE);
+		read_negative = analogRead(LM35_EXTERNAL_NEGATIVE);
+		
+		/* magic */
+		read_positive = ((read_positive / 1024.0) * 5000) / 10.0;
+		read_negative = ((read_negative / 1024.0) * 5000) / 10.0;
+		
+		temp_external = read_positive - read_negative;
+		
+		/*
+		 * write sensor readings to EEPROM
+		 *
+		 */
+		
+		/* these writes most certainly need some checks/delays as we found out in a previous discussion,
+		 * i have added delay() but checks would be required for anything beyond a basic prototype
+		 */
+		
+		// We need interval timer here for the writing of the temp_external & temp_internal
+		// fixed
+		// also need to implement some error checking on the write of the eeprom
+		// see http://playground.arduino.cc/Code/EEPROMex
+		// ticket #5
+		
+		// interval timer
 
 		// We need to check if the EEPROM is ready/written etc.. Ticket #3
 		
