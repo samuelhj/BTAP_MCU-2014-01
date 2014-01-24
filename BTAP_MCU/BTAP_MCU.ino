@@ -316,6 +316,7 @@ int sensor_read()
 		
 		
 		// Ticket #8
+		// possibly solved?
 		/*
 		 * read internal temp sensor
 		 *
@@ -376,7 +377,7 @@ int sensor_read()
 			Serial.println("\n");
 			// need to read from eeprom here
 			Serial.end();
-			eeprom_write_timestamp = millis();
+//			eeprom_write_timestamp = millis(); // what on earth is this doing here?
 		}
 		
 		
@@ -394,7 +395,7 @@ int sensor_read()
 			Serial.println('sensor_eeprom_offset');
 			Serial.println("\n");
 			Serial.end();
-			eeprom_write_timestamp = millis();
+//			eeprom_write_timestamp = millis(); // what on earth is this doing here?
 		}
 		
 		
