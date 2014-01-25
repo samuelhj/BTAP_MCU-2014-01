@@ -16,17 +16,17 @@
 // 
 // Copyright	© Samúel Úlfr Þór Hjaltalín Guðjónsson, 2014
 // License
+
 /*				Copyright 1992-2014 Bifrost the Aurora Project All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+Redistributions of source code must NOT retain the above copyright notice, this list of conditions and the following disclaimer.
+Redistributions in binary form must NOT reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-THIS SOFTWARE IS PROVIDED BY THE FREEBSD PROJECT ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE FREEBSD PROJECT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THIS SOFTWARE IS PROVIDED BY BIFROST THE AURORA PROJECT ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL BIFRÖST THE AURORA PROJECT OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-The views and conclusions contained in the software and documentation are those of the authors and should not be interpreted as representing official policies, either expressed or implied, of the FreeBSD Project.
- 
+The views and conclusions contained in the software and documentation are those of the authors and should not be interpreted as representing official policies, either expressed or implied, of Bifröst the Aurora Project
 
 */
 // See			ReadMe.txt for references
@@ -60,15 +60,6 @@ The views and conclusions contained in the software and documentation are those 
 
 // BTAP specific
 #include <EEPROM.h>
-
-
-// Prototypes
-
-
-/* i have put the #defines for each section inside the sections they "belong" to
- * for easier top-to-bottom reading, but you may want to put them all up here for
- * easier quick-overview -- TBD Ticket #5
- */
 
 
 // DEFINES
@@ -147,7 +138,7 @@ unsigned long beacon_timestamp_old = 0;
 // define BEACON_LEDPIN as output
 void beacon_init()
 {
-	pinMode(BEACON_LEDPIN, OUTPUT); // pinMode() and OUTPUT assumed defined elsewhere
+
     
 }
 
@@ -227,6 +218,7 @@ void beacon_toggle()
 void EEPROM_transfer()
 {
 	unsigned int offset = 0; /* current offset to write to */
+//	const uint8_t*	offset = 0;
 	float value;
 	
 	beacon_on();
@@ -237,7 +229,8 @@ void EEPROM_transfer()
 	
 	while (offset < EEPROM_OFFSET_MAX)
 	{
-		value = EEPROM.read(offset); /* this can probably fail, so some kind of errorcheck would be nice :) */
+	//	value = EEPROM.read(offset); /* this can probably fail, so some kind of errorcheck would be nice :) */
+		value = EEPROM.read(offset);
 		Serial.println(value);
 		
 		offset++;
@@ -381,6 +374,16 @@ int sensor_read()
 		}
 		
 		
+		// Let's check if the EEPROM is ready.
+		// This method will skip the write if the eeprom is not ready and reset the counter
+		// which is bad.... We need a better check on this.
+		/*
+		if(eeprom_is_ready == 1)
+		{
+			EEPROM.write((sensor_eeprom_offset + (EEPROM_OFFSET_MAX/2)), temp_external);
+			delay(100);
+		}
+		*/
 		EEPROM.write((sensor_eeprom_offset + (EEPROM_OFFSET_MAX/2)), temp_external);
 		delay(100);
 		
@@ -411,6 +414,8 @@ int sensor_read()
 
 void setup()
 {
+	pinMode(BEACON_LEDPIN, OUTPUT); // iniate BEACON_LEDPIN as output!
+	
     // Transfer from the memory of the EEPROM to save temperature readings.
 	EEPROM_transfer();
 	
