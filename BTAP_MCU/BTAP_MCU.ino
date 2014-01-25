@@ -17,7 +17,7 @@
 // Copyright	© Samúel Úlfr Þór Hjaltalín Guðjónsson, 2014
 // License
 
-/*				Copyright 1992-2014 Bifrost the Aurora Project All rights reserved.
+/*				Copyright 2014 Bifrost the Aurora Project All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
