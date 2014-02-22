@@ -421,7 +421,7 @@ void setup()
 	EEPROM_transfer();
 	
 	// we initalize the beacon (Isn't this too much of complication?)
-    beacon_init();
+//    beacon_init();
 }
 
 // This thing runs into eternity // main function
