@@ -64,6 +64,12 @@ The views and conclusions contained in the software and documentation are those 
 
 // DEFINES
 
+// CLEAR EEPROM upon start?
+// 1 = YES
+// 0 = NO
+
+#define CLEAR_EEPROM 1
+
 // define for EEPROM
 
 #define EEPROM_OFFSET_MAX 1024 // this _must_ be dividable by two
@@ -94,7 +100,7 @@ The views and conclusions contained in the software and documentation are those 
 #define LM35_EXTERNAL_NEGATIVE 3
 
 // define interval of EEPROM write (normally 90,000 ms or 90s)
-#define EEPROM_WRITE_INTERVAL 90000
+#define EEPROM_WRITE_INTERVAL 9000
 
 
 
@@ -124,7 +130,19 @@ void avr_runtime()
 	}
 }
 
+// Clear EEPROM
 
+void EEPROM_clear()
+{
+	if(CLEAR_EEPROM == 1)
+	{
+		// write a 0 to all 1024 bytes of the EEPROM
+		// to clear the EEPROM
+		for (int i = 0; i < 1024; i++)
+			EEPROM.write(i, 0);
+	}
+		
+}
 
 // light beacon
 
@@ -419,6 +437,10 @@ void setup()
 	
     // Transfer from the memory of the EEPROM to save temperature readings.
 	EEPROM_transfer();
+	
+	// Then we CLEAR the EEPROM
+	// If EEPROM_CLEAR == 1
+//	EEPROM_clear();
 	
 	// we initalize the beacon (Isn't this too much of complication?)
 //    beacon_init();
