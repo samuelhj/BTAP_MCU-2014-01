@@ -72,7 +72,7 @@ The views and conclusions contained in the software and documentation are those 
 
 // define for EEPROM
 
-#define EEPROM_OFFSET_MAX 1020 // this _must_ be dividable by two
+#define EEPROM_OFFSET_MAX 1022 // this _must_ be dividable by two
 // The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1018
 // because 1021, 1022 are temp_internal_count and
 // 1023, 1024 are temp_external_count
@@ -141,6 +141,7 @@ void EEPROM_clear()
 {
 	if(CLEAR_EEPROM == 1)
 	{
+		
 		// write a 0 to all 1024 bytes of the EEPROM
 		// to clear the EEPROM
 		for (int i = 0; i < 1024; i++)
@@ -458,10 +459,8 @@ void setup()
 	
 	// Then we CLEAR the EEPROM
 	// If EEPROM_CLEAR == 1
-//	EEPROM_clear();
+	EEPROM_clear();
 	
-	// we initalize the beacon (Isn't this too much of complication?)
-//    beacon_init();
 }
 
 // This thing runs into eternity // main function
