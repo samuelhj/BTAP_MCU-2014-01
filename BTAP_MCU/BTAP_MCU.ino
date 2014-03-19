@@ -72,8 +72,13 @@ The views and conclusions contained in the software and documentation are those 
 
 // define for EEPROM
 
-#define EEPROM_OFFSET_MAX 1024 // this _must_ be dividable by two
-// The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1024
+#define EEPROM_OFFSET_MAX 1020 // this _must_ be dividable by two
+// The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1018
+// because 1021, 1022 are temp_internal_count and
+// 1023, 1024 are temp_external_count
+// see read_temp()
+
+
 #define SERIAL_BAUD 9600	// Baud rate of serial output
 #define SERIAL_LOG_HEAD "Start of log."
 #define SERIAL_LOG_TAIL "End of log."
@@ -289,14 +294,23 @@ unsigned int sensor_eeprom_offset = 0; /* how far into the eeprom memory we are 
 
 unsigned long last_eeprom_write = 0;
 
+int temp_count = 0;
 
 int sensor_read()
 {
 	float temp_internal, temp_external, read_positive, read_negative;
+	
+	
+	// We read memory bank 1024, where we store sensor_eeprom_offset
+	
+	sensor_eeprom_offset = EEPROM.read(1024);
+	sensor_eeprom_offset = sensor_eeprom_offset * 2;
+	
 	/*
 	 * bail out if we have already written the maximum number of pairs we have room for
 	 *
 	 */
+	
 	
 	if (sensor_eeprom_offset >= ((EEPROM_OFFSET_MAX)/2))
 	{
@@ -315,8 +329,6 @@ int sensor_read()
 		
 
 	}
-
-
 	
 		unsigned long eeprom_write_timestamp = millis();
 		
@@ -424,6 +436,10 @@ int sensor_read()
 		
 		
 		sensor_eeprom_offset++; // update offset to use on next call to this function
+		
+		// We write the sensor_eeprom_offset to EEPROM memory bank 1024.
+		
+		EEPROM.write(1024, (sensor_eeprom_offset)/2);
 			
 	}
 	
