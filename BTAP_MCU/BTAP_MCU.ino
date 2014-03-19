@@ -68,7 +68,7 @@ The views and conclusions contained in the software and documentation are those 
 // 1 = YES
 // 0 = NO
 
-#define CLEAR_EEPROM 1
+#define CLEAR_EEPROM 0
 
 // define for EEPROM
 
@@ -88,7 +88,7 @@ The views and conclusions contained in the software and documentation are those 
 #define BEACON_INTERVAL 1500 // for testing
 #define BEACON_INTERVAL_OFF 1000 // Light beacon is off for defined milliseconds
 #define BEACON_INTERVAL_ON 250 // Light beacon is on for defined milliseconds
-#define BEACON_LEDPIN   12 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 // REMEMBER TO CHANGE THIS TO 12 PRIOR TO FLIGHT!!!!!!
 
 // define for sensors
@@ -351,7 +351,9 @@ int sensor_read()
 		read_positive = analogRead(LM35_EXTERNAL_POSITIVE);
 		read_negative = analogRead(LM35_EXTERNAL_NEGATIVE);
 		
-		/* magic */
+		// magic for the ADC. The reference voltage level is 5V
+		// more later.. I'm feeling zzz...
+		
 		read_positive = ((read_positive / 1024.0) * 5000) / 10.0;
 		read_negative = ((read_negative / 1024.0) * 5000) / 10.0;
 		
