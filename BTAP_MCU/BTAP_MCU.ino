@@ -295,7 +295,8 @@ void EEPROM_transfer()
 // define variables
 
 
-unsigned int sensor_eeprom_offset = 0; /* how far into the eeprom memory we are (aka. next offset to write at) */
+unsigned int sensor_eeprom_offset = 1; /* how far into the eeprom memory we are (aka. next offset to write at) */
+EEPROM.write(1023, sensor_eeprom_offset);
 
 unsigned long last_eeprom_write = 0;
 
@@ -308,7 +309,7 @@ int sensor_read()
 	
 	// We read memory bank 1024, where we store sensor_eeprom_offset
 	
-	sensor_eeprom_offset = EEPROM.read(1024);
+	sensor_eeprom_offset = EEPROM.read(1023);
 	sensor_eeprom_offset = sensor_eeprom_offset * 2;
 	
 	/*
