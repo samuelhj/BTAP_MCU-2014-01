@@ -93,7 +93,7 @@ The views and conclusions contained in the software and documentation are those 
 #define BEACON_INTERVAL 1500 // for testing
 #define BEACON_INTERVAL_OFF 1000 // Light beacon is off for defined milliseconds
 #define BEACON_INTERVAL_ON 250 // Light beacon is on for defined milliseconds
-#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+#define BEACON_LEDPIN   12 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 // REMEMBER TO CHANGE THIS TO 12 PRIOR TO FLIGHT!!!!!!
 
 // define for sensors
@@ -105,7 +105,7 @@ The views and conclusions contained in the software and documentation are those 
 #define LM35_EXTERNAL_NEGATIVE 3
 
 // define interval of EEPROM write (normally 90,000 ms or 90s)
-#define EEPROM_WRITE_INTERVAL 9000
+#define EEPROM_WRITE_INTERVAL 90000
 
 
 
@@ -145,7 +145,11 @@ void EEPROM_clear()
 		// write a 0 to all 1024 bytes of the EEPROM
 		// to clear the EEPROM
 		for (int i = 0; i < 1024; i++)
+		{
 			EEPROM.write(i, 0);
+			delay(100);
+		}
+			
 	}
 		
 }
@@ -404,20 +408,10 @@ int sensor_read()
 			Serial.println("\n");
 			// need to read from eeprom here
 			Serial.end();
-//			eeprom_write_timestamp = millis(); // what on earth is this doing here?
 		}
 		
 		
-		// Let's check if the EEPROM is ready.
-		// This method will skip the write if the eeprom is not ready and reset the counter
-		// which is bad.... We need a better check on this.
-		/*
-		if(eeprom_is_ready == 1)
-		{
-			EEPROM.write((sensor_eeprom_offset + (EEPROM_OFFSET_MAX/2)), temp_external);
-			delay(100);
-		}
-		*/
+
 		EEPROM.write((sensor_eeprom_offset + (EEPROM_OFFSET_MAX/2)), temp_external);
 		delay(100);
 		
@@ -432,15 +426,14 @@ int sensor_read()
 			Serial.println('sensor_eeprom_offset');
 			Serial.println("\n");
 			Serial.end();
-//			eeprom_write_timestamp = millis(); // what on earth is this doing here?
 		}
 		
 		
 		sensor_eeprom_offset++; // update offset to use on next call to this function
 		
 		// We write the sensor_eeprom_offset to EEPROM memory bank 1024.
-		
-		EEPROM.write(1024, (sensor_eeprom_offset)/2);
+
+		EEPROM.write(1023, (sensor_eeprom_offset)/2);
 			
 	}
 	
