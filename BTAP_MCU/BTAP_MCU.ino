@@ -139,19 +139,15 @@ void avr_runtime()
 
 void EEPROM_clear()
 {
-	if(CLEAR_EEPROM == 1)
-	{
-		
-		// write a 0 to all 1024 bytes of the EEPROM
+		// write a 1 to all 1024 bytes of the EEPROM
 		// to clear the EEPROM
+		// 1 is used for so memory bank 1023 always starts 'fresh' at 1 for the counter
+		
 		for (int i = 0; i < 1024; i++)
 		{
-			EEPROM.write(i, 0);
+			EEPROM.write(i, 1);
 			delay(100);
 		}
-			
-	}
-		
 }
 
 // light beacon
@@ -294,10 +290,10 @@ void EEPROM_transfer()
 
 // define variables
 
-
 unsigned int sensor_eeprom_offset = 1; /* how far into the eeprom memory we are (aka. next offset to write at) */
-EEPROM.write(1023, sensor_eeprom_offset);
 
+
+// variable for timestamp, the last time we wrote to EEPROM.
 unsigned long last_eeprom_write = 0;
 
 int temp_count = 0;
@@ -308,7 +304,7 @@ int sensor_read()
 	
 	
 	// We read memory bank 1024, where we store sensor_eeprom_offset
-	
+//	EEPROM.read(1023, sensor_eeprom_offset);
 	sensor_eeprom_offset = EEPROM.read(1023);
 	sensor_eeprom_offset = sensor_eeprom_offset * 2;
 	
@@ -453,7 +449,14 @@ void setup()
 	
 	// Then we CLEAR the EEPROM
 	// If EEPROM_CLEAR == 1
-	EEPROM_clear();
+	if(CLEAR_EEPROM == 1)
+	{
+		EEPROM_clear();
+		beacon_on();	// Turn beacon on to indicate clear was successfull
+		delay(15000);	// We wait 15s to give a clear indication that the clear was successful
+		beacon_off();	// Turn beacon off
+	}
+	
 	
 }
 
