@@ -85,7 +85,7 @@ The views and conclusions contained in the software and documentation are those 
 #define SERIAL_LOG_SPACE "  " // divider used between in and out values in alternative version
 
 // define for debug, 1 == on, 0 == off
-#define DEBUG 0
+#define DEBUG 1
 #define DEBUG_INTERVAL 2000
 
 // define for light beacon
@@ -93,7 +93,7 @@ The views and conclusions contained in the software and documentation are those 
 #define BEACON_INTERVAL 1500 // for testing
 #define BEACON_INTERVAL_OFF 1000 // Light beacon is off for defined milliseconds
 #define BEACON_INTERVAL_ON 250 // Light beacon is on for defined milliseconds
-#define BEACON_LEDPIN   12 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 // REMEMBER TO CHANGE THIS TO 12 PRIOR TO FLIGHT!!!!!!
 
 // define for sensors
@@ -135,20 +135,6 @@ void avr_runtime()
 	}
 }
 
-// Clear EEPROM
-
-void EEPROM_clear()
-{
-		// write a 1 to all 1024 bytes of the EEPROM
-		// to clear the EEPROM
-		// 1 is used for so memory bank 1023 always starts 'fresh' at 1 for the counter
-		
-		for (int i = 0; i < 1024; i++)
-		{
-			EEPROM.write(i, 1);
-			delay(100);
-		}
-}
 
 // light beacon
 
@@ -438,6 +424,28 @@ int sensor_read()
 }
 
 
+// Clear EEPROM
+
+void EEPROM_clear()
+{
+	// write a 1 to all 1024 bytes of the EEPROM
+	// to clear the EEPROM
+	// 1 is used for so memory bank 1023 always starts 'fresh' at 1 for the counter
+	
+	if(CLEAR_EEPROM == 1)
+	{
+		for (int i = 0; i < 1024; i++)
+		{
+			EEPROM.write(i, 1);
+			delay(100);
+			
+		}
+		beacon_on();
+		delay(1500);
+		beacon_off();
+	}
+}
+
 // setup routine, run once every restart.
 
 void setup()
@@ -449,14 +457,8 @@ void setup()
 	
 	// Then we CLEAR the EEPROM
 	// If EEPROM_CLEAR == 1
-	if(CLEAR_EEPROM == 1)
-	{
-		EEPROM_clear();
-		beacon_on();	// Turn beacon on to indicate clear was successfull
-		delay(15000);	// We wait 15s to give a clear indication that the clear was successful
-		beacon_off();	// Turn beacon off
-	}
-	
+
+	EEPROM_clear();
 	
 }
 
