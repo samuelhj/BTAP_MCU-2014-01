@@ -87,7 +87,7 @@ The views and conclusions contained in the software and documentation are those 
 #define SERIAL_LOG_SPACE "  " // divider used between in and out values in alternative version
 
 // define for debug, 1 == on, 0 == off
-#define DEBUG 1
+#define DEBUG 0
 #define DEBUG_INTERVAL 2000
 
 // define for light beacon
@@ -95,8 +95,9 @@ The views and conclusions contained in the software and documentation are those 
 #define BEACON_INTERVAL 1500 // for testing
 #define BEACON_INTERVAL_OFF 1000 // Light beacon is off for defined milliseconds
 #define BEACON_INTERVAL_ON 250 // Light beacon is on for defined milliseconds
-#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+#define BEACON_LEDPIN   12 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 // REMEMBER TO CHANGE THIS TO 12 PRIOR TO FLIGHT!!!!!!
+#define STATUS_LEDPIN 13 // pin is used for status display on the dev board.
 
 // define for sensors
 
@@ -107,7 +108,7 @@ The views and conclusions contained in the software and documentation are those 
 #define LM35_EXTERNAL_NEGATIVE 3
 
 // define interval of EEPROM write (normally 90,000 ms or 90s)
-#define EEPROM_WRITE_INTERVAL 90000
+#define EEPROM_WRITE_INTERVAL 20000
 
 
 
@@ -145,15 +146,26 @@ unsigned long beacon_timestamp_on_old = 0;
 unsigned long beacon_timestamp_off_old = 0;
 unsigned long beacon_timestamp_old = 0;
 
-// not really needed
-// int beacon_led_state = LOW; // Set the led to low at beginning
-
-// define BEACON_LEDPIN as output
-void beacon_init()
+void statusled_on()
 {
+	
+	// turn on led, regardless of current state
+	
+	
+	digitalWrite(STATUS_LEDPIN, HIGH);
 
-    
 }
+
+void statusled_off()
+{
+	
+	// turn off led, regardless of current state
+	
+	digitalWrite(STATUS_LEDPIN, LOW);
+
+}
+
+
 
 void beacon_on()
 {
@@ -442,9 +454,9 @@ void EEPROM_clear()
 			delay(100);
 			
 		}
-		beacon_on();
+		statusled_on();
 		delay(1500);
-		beacon_off();
+		statusled_off();
 	}
 }
 
@@ -453,6 +465,7 @@ void EEPROM_clear()
 void setup()
 {
 	pinMode(BEACON_LEDPIN, OUTPUT); // iniate BEACON_LEDPIN as output!
+	pinMode(STATUS_LEDPIN, OUTPUT); // iniate STATUS_LEDPIN as output!
 	
     // Transfer from the memory of the EEPROM to save temperature readings.
 	EEPROM_transfer();
