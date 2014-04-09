@@ -68,9 +68,7 @@ The views and conclusions contained in the software and documentation are those 
 // 1 = YES
 // 0 = NO
 
-#define CLEAR_EEPROM 0
-
-// define for EEPROM
+#define CLEAR_EEPROM 0 // define for EEPROM
 
 #define EEPROM_OFFSET_MAX 1022 // this _must_ be dividable by two
 // The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1022
@@ -87,7 +85,7 @@ The views and conclusions contained in the software and documentation are those 
 #define SERIAL_LOG_SPACE "  " // divider used between in and out values in alternative version
 
 // define for debug, 1 == on, 0 == off
-#define DEBUG 0
+#define DEBUG 1
 #define DEBUG_INTERVAL 2000
 
 // define for light beacon
@@ -296,7 +294,6 @@ unsigned int sensor_eeprom_offset = 1; /* how far into the eeprom memory we are 
 // variable for timestamp, the last time we wrote to EEPROM.
 unsigned long last_eeprom_write = 0;
 
-int temp_count = 0;
 
 int sensor_read()
 {
@@ -430,7 +427,19 @@ int sensor_read()
 		
 		// We write the sensor_eeprom_offset to EEPROM memory bank 1024.
 
-		EEPROM.write(1023, (sensor_eeprom_offset)/2);
+		EEPROM.write(1023, ((sensor_eeprom_offset)/2));
+		
+		if(DEBUG == 1)
+		{
+			Serial.begin(SERIAL_BAUD);
+			Serial.println("we are at memory bank: ");
+			int a=0;
+			a = EEPROM.read(1023);
+			Serial.println('a');
+			Serial.println("\n");
+			Serial.end();
+			delay(1000);
+		}
 			
 	}
 	
@@ -445,7 +454,7 @@ void EEPROM_clear()
 	// write a 1 to all 1024 bytes of the EEPROM
 	// to clear the EEPROM
 	// 1 is used for so memory bank 1023 always starts 'fresh' at 1 for the counter
-	
+	// This takes 100ms + 10ms * 1023 = ms
 	if(CLEAR_EEPROM == 1)
 	{
 		for (int i = 0; i < 1024; i++)
@@ -454,9 +463,9 @@ void EEPROM_clear()
 			delay(100);
 			
 		}
-		statusled_on();
-		delay(1500);
-		statusled_off();
+		statusled_on();		// turn on status led, to notify that the erase has been complete
+		delay(15000);		// for 15s so that the user has time to reburn with EEPROM_CLEAR = 0
+		statusled_off();	// this gives enough time for user to notice that the eeprom clear is done.
 	}
 }
 
