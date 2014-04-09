@@ -73,9 +73,11 @@ The views and conclusions contained in the software and documentation are those 
 // define for EEPROM
 
 #define EEPROM_OFFSET_MAX 1022 // this _must_ be dividable by two
-// The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1018
-// because 1021, 1022 are temp_internal_count and
-// 1023, 1024 are temp_external_count
+// The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1022
+// memory bank 1023 (1024) stores the value for the counter that is used to determine
+// how far into the temperature write list we've gone. ie stores what memory bank to write to next.
+// Memory bank 0 (1) is not used to get the thing to be able to be divided by two.
+// this reduces overhead calculations to determine in what memory bank we're writing to.
 // see read_temp()
 
 
