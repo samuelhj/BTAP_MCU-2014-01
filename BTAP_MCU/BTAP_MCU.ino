@@ -93,7 +93,7 @@ The views and conclusions contained in the software and documentation are those 
 #define BEACON_INTERVAL 1500 // for testing
 #define BEACON_INTERVAL_OFF 1000 // Light beacon is off for defined milliseconds
 #define BEACON_INTERVAL_ON 250 // Light beacon is on for defined milliseconds
-#define BEACON_LEDPIN   12 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
+#define BEACON_LEDPIN   13 // pin 13 is used for testing on the dev board, pin 12 is the one that's actually used in the payload
 // REMEMBER TO CHANGE THIS TO 12 PRIOR TO FLIGHT!!!!!!
 #define STATUS_LEDPIN 13 // pin is used for status display on the dev board.
 
@@ -401,6 +401,7 @@ int sensor_read()
 			Serial.println(temp_internal);
 			Serial.println("\n");
 			// need to read from eeprom here
+			Serial.println(EEPROM.read(sensor_eeprom_offset)); //new, did this work?
 			Serial.end();
 		}
 		
@@ -454,7 +455,7 @@ void EEPROM_clear()
 	// write a 1 to all 1024 bytes of the EEPROM
 	// to clear the EEPROM
 	// 1 is used for so memory bank 1023 always starts 'fresh' at 1 for the counter
-	// This takes 100ms + 10ms * 1023 = ms
+	// This takes 100ms + 10ms * 1023 = 112.530 ms (1m52s)
 	if(CLEAR_EEPROM == 1)
 	{
 		for (int i = 0; i < 1024; i++)
