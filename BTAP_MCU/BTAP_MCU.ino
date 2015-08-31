@@ -68,7 +68,7 @@ The views and conclusions contained in the software and documentation are those 
 // 1 = YES
 // 0 = NO
 
-#define CLEAR_EEPROM 0 // define for EEPROM
+#define CLEAR_EEPROM 0 // define for EEPROM to clear it.
 
 #define EEPROM_OFFSET_MAX 1022 // this _must_ be dividable by two
 // The Atmega328P has 1kiB of EEPROM. So to fully use the memory set this at 1022

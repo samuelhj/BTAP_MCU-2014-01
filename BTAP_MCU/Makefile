@@ -19,17 +19,19 @@
 # If not defined, error BOARD_TAG not defined
 #
 #BOARD_TAG  = mega2560
+BOARD_TAG = nano
 
 # BOARD_PORT is optional
 # If not defined, BOARD_PORT = /dev/tty.usb* (default)
 #
 #BOARD_PORT = /dev/tty.usbmodem*
-
+BOARD_PORT = /dev/tty.wchusbserial1420
 # Xcode takes SKETCHBOOK_DIR from preferences.txt 
 # If not defined, each IDE has its own SKETCHBOOK_DIR (default)
 # To share the same SKETCHBOOK_DIR along all IDEs, define
 # 
 #SKETCHBOOK_DIR =
+SKETCHBOOK_DIR = /Users/ulfr/Dropbox/Forritun
 
 # SERIAL_BAUDRATE for the serial console, 9600 by default
 # Uncomment and specify another speed

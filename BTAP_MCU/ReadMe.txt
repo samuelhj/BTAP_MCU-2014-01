@@ -15,6 +15,14 @@
   ----------------------------------
 
 
+TODO:
+
+Log data to uSD card instead of EEPROM memory.
+
+Improve temperature reading.
+
+port to Nano board instead of Uno.
+
 
   embedXcode
   embedXcode+
